@@ -1,0 +1,12 @@
+name: Refer
+version: 1.9.2
+description: Refer custom plugin
+author: insou
+softdepend: [Vault]
+
+main: com.insou.Refer
+
+commands:
+  refer:
+    description: Opens Refer GUI
+    aliases: ref
