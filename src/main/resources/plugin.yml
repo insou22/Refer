@@ -4,7 +4,7 @@ description: Refer custom plugin
 author: insou
 softdepend: [Vault]
 
-main: com.insou.Refer
+main: co.insou.refer.Refer
 
 commands:
   refer:

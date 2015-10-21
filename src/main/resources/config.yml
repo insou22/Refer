@@ -1,0 +1,127 @@
+# RRRRRRRRRRRRRRRRR                            ffffffffffffffff                                                     CCCCCCCCCCCCC                                         ffffffffffffffff     iiii                      
+# R::::::::::::::::R                          f::::::::::::::::f                                                 CCC::::::::::::C                                        f::::::::::::::::f   i::::i                     
+# R::::::RRRRRR:::::R                        f::::::::::::::::::f                                              CC:::::::::::::::C                                       f::::::::::::::::::f   iiii                      
+# RR:::::R     R:::::R                       f::::::fffffff:::::f                                             C:::::CCCCCCCC::::C                                       f::::::fffffff:::::f                             
+#   R::::R     R:::::R     eeeeeeeeeeee      f:::::f       ffffff eeeeeeeeeeee     rrrrr   rrrrrrrrr         C:::::C       CCCCCC    ooooooooooo    nnnn  nnnnnnnn      f:::::f       ffffff iiiiiii     ggggggggg   ggggg
+#   R::::R     R:::::R   ee::::::::::::ee    f:::::f            ee::::::::::::ee   r::::rrr:::::::::r       C:::::C                oo:::::::::::oo  n:::nn::::::::nn    f:::::f              i:::::i    g:::::::::ggg::::g
+#   R::::RRRRRR:::::R   e::::::eeeee:::::ee f:::::::ffffff     e::::::eeeee:::::ee r:::::::::::::::::r      C:::::C               o:::::::::::::::o n::::::::::::::nn  f:::::::ffffff         i::::i   g:::::::::::::::::g
+#   R:::::::::::::RR   e::::::e     e:::::e f::::::::::::f    e::::::e     e:::::e rr::::::rrrrr::::::r     C:::::C               o:::::ooooo:::::o nn:::::::::::::::n f::::::::::::f         i::::i  g::::::ggggg::::::gg
+#   R::::RRRRRR:::::R  e:::::::eeeee::::::e f::::::::::::f    e:::::::eeeee::::::e  r:::::r     r:::::r     C:::::C               o::::o     o::::o   n:::::nnnn:::::n f::::::::::::f         i::::i  g:::::g     g:::::g 
+#   R::::R     R:::::R e:::::::::::::::::e  f:::::::ffffff    e:::::::::::::::::e   r:::::r     rrrrrrr     C:::::C               o::::o     o::::o   n::::n    n::::n f:::::::ffffff         i::::i  g:::::g     g:::::g 
+#   R::::R     R:::::R e::::::eeeeeeeeeee    f:::::f          e::::::eeeeeeeeeee    r:::::r                 C:::::C               o::::o     o::::o   n::::n    n::::n  f:::::f               i::::i  g:::::g     g:::::g 
+#   R::::R     R:::::R e:::::::e             f:::::f          e:::::::e             r:::::r                  C:::::C       CCCCCC o::::o     o::::o   n::::n    n::::n  f:::::f               i::::i  g::::::g    g:::::g 
+# RR:::::R     R:::::R e::::::::e           f:::::::f         e::::::::e            r:::::r                   C:::::CCCCCCCC::::C o:::::ooooo:::::o   n::::n    n::::n f:::::::f             i::::::i g:::::::ggggg:::::g 
+# R::::::R     R:::::R  e::::::::eeeeeeee   f:::::::f          e::::::::eeeeeeee    r:::::r                    CC:::::::::::::::C o:::::::::::::::o   n::::n    n::::n f:::::::f             i::::::i  g::::::::::::::::g 
+# R::::::R     R:::::R   ee:::::::::::::e   f:::::::f           ee:::::::::::::e    r:::::r                      CCC::::::::::::C  oo:::::::::::oo    n::::n    n::::n f:::::::f             i::::::i   gg::::::::::::::g 
+# RRRRRRRR     RRRRRRR     eeeeeeeeeeeeee   fffffffff             eeeeeeeeeeeeee    rrrrrrr                         CCCCCCCCCCCCC    ooooooooooo      nnnnnn    nnnnnn fffffffff             iiiiiiii     gggggggg::::::g 
+#                                                                                                                                                                                                                 g:::::g 
+#                                                                                                                                                                                                     gggggg      g:::::g 
+#                                                                                                                                                                                                    g:::::gg   gg:::::g 
+#                                                                                                                                                                                                     g::::::ggg:::::::g 
+#                                                                                                                                                                                                      gg:::::::::::::g  
+#                                                                                                                                                                                                        ggg::::::ggg    
+#                                                                                                                                                                                                           gggggg       
+sql:
+  enabled: false
+  hostname: 'sql.url.com'
+  port: '3306'
+  database: 'SQLDatabase'
+  username: 'SQLUsername'
+  password: 'SQLPassword'
+  connection-pool:
+    initial-size: 2
+    max-active: 5
+    max-wait: 20
+    max-idle: 300
+
+gui:
+  size: 9
+  title:
+    selector: '&aRefer Selector'
+    player:
+      refer: '&aRefer Head Selector'
+      request: '&aRequest Head Selector'
+
+request-sound: 'NOTE_PLING'
+
+enable-vault: false
+requestSound: NOTE_PLING
+rewards:
+  '1':
+    message: '&3Nice job! You got your first reference!'
+    money: 500.5
+    sound: NOTE_PLING
+    chance:
+      enabled: false
+      percentage: 50.0
+      messages:
+        win: '&aYou won! Nice job!'
+        lose: '&cYou didn''t win this time... Better luck next time!'
+      money: 500.0
+      player-commands:
+      - spawn
+      - refer help
+      console-commands:
+      - kit winner %player%
+      - sudo %player% spawn
+      sounds:
+        win: NOTE_PLING
+        lose: CAT_MEOW
+    console-commands:
+    - kit refer1 %player%
+    - kit superpickaxe %player%
+    - sudo %player% spawn
+    player-commands:
+    - spawn
+    - refer help
+  '5':
+    message: '&aCongrats on getting 5 references!!'
+    money: 1000
+    sound: CAT_MEOW
+    chance:
+      enabled: false
+      percentage: 50.0
+      messages:
+        win: '&aYou won! Nice job!'
+        lose: '&cYou didn''t win this time... Better luck next time!'
+      money: 500.0
+      player-commands:
+      - spawn
+      - refer help
+      console-commands:
+      - kit winner %player%
+      - sudo %player% spawn
+      sounds:
+        win: NOTE_PLING
+        lose: CAT_MEOW
+    console-commands:
+    - kit refer5 %player%
+    player-commands:
+    - spawn
+    - refer help
+  '100':
+    message: '&bDamn you are dedicated - legend!'
+    money: 5000
+    sound: WOLF_BARK
+    chance:
+      enabled: false
+      percentage: 50.0
+      messages:
+        win: '&aYou won! Nice job!'
+        lose: '&cYou didn''t win this time... Better luck next time!'
+      money: 500.0
+      player-commands:
+      - spawn
+      - refer help
+      console-commands:
+      - kit winner %player%
+      - sudo %player% spawn
+      sounds:
+        win: NOTE_PLING
+        lose: CAT_MEOW
+    console-commands:
+    - kit refer100 %player%
+    player-commands:
+    - spawn
+    - refer help
+config-version: 1.7
