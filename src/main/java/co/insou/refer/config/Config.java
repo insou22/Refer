@@ -27,27 +27,27 @@ public class Config {
 		init();
 	}
 	
-	public boolean vaultEnabled = false;
-	public boolean sql = false;
-	public Sound requestSound;
-	
-	public String sqlHostname;
-	public String sqlPort;
-	public String sqlDatabase;
-	public String sqlUsername;
-	public String sqlPassword;
+	private boolean vaultEnabled = false;
+	private boolean sql = false;
+	private Sound requestSound;
 
-	public int initSize;
-	public int maxActive;
-	public int maxWait;
-	public int maxIdle;
-	
-	public String guiTitle;
-	public int guiSize;
-	public Map<Integer, ItemStack> guiItems = new HashMap<>();
+	private String sqlHostname;
+	private String sqlPort;
+	private String sqlDatabase;
+	private String sqlUsername;
+	private String sqlPassword;
 
-	public String playerGUITitleRefer;
-	public String playerGUITitleRequest;
+	private int initSize;
+	private int maxActive;
+	private int maxWait;
+	private int maxIdle;
+	
+	private String guiTitle;
+	private int guiSize;
+	private Map<Integer, ItemStack> guiItems = new HashMap<>();
+
+	private String playerGUITitleRefer;
+	private String playerGUITitleRequest;
 
 	private YamlConfiguration conf;
 	
@@ -162,5 +162,84 @@ public class Config {
 	private List<String> getList (String index) {
 		return conf.getStringList(getRewardNum + "." + index);
 	}
-	
+
+	public boolean isVaultEnabled() {
+		return vaultEnabled;
+	}
+
+	public boolean isSqlEnabled() {
+		return sql;
+	}
+
+	public Sound getRequestSound() {
+		return requestSound;
+	}
+
+	public int getGetRewardNum() {
+		return getRewardNum;
+	}
+
+	public boolean isSql() {
+		return sql;
+	}
+
+	public String getSqlHostname() {
+		return sqlHostname;
+	}
+
+	public String getSqlPort() {
+		return sqlPort;
+	}
+
+	public String getSqlDatabase() {
+		return sqlDatabase;
+	}
+
+	public String getSqlUsername() {
+		return sqlUsername;
+	}
+
+	public String getSqlPassword() {
+		return sqlPassword;
+	}
+
+	public int getInitSize() {
+		return initSize;
+	}
+
+	public int getMaxActive() {
+		return maxActive;
+	}
+
+	public int getMaxWait() {
+		return maxWait;
+	}
+
+	public int getMaxIdle() {
+		return maxIdle;
+	}
+
+	public String getGuiTitle() {
+		return guiTitle;
+	}
+
+	public int getGuiSize() {
+		return guiSize;
+	}
+
+	public Map<Integer, ItemStack> getGuiItems() {
+		return guiItems;
+	}
+
+	public String getPlayerGUITitleRefer() {
+		return playerGUITitleRefer;
+	}
+
+	public String getPlayerGUITitleRequest() {
+		return playerGUITitleRequest;
+	}
+
+	public YamlConfiguration getConf() {
+		return conf;
+	}
 }

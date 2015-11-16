@@ -4,8 +4,9 @@ import co.insou.refer.commands.ReferCommand;
 
 import java.util.logging.Logger;
 
-import co.insou.refer.database.DB;
-import co.insou.refer.database.sql.ConnectionPool;
+import co.insou.refer.database.Database;
+import co.insou.refer.database.sql.ConnectionPoolManager;
+import co.insou.refer.database.sql.SQLManager;
 import co.insou.refer.database.yml.Yaml;
 import co.insou.refer.events.InventoryClick;
 import co.insou.refer.events.PlayerJoin;
@@ -13,6 +14,7 @@ import co.insou.refer.events.PlayerQuit;
 import co.insou.refer.gui.GUI;
 import co.insou.refer.gui.InventoryAPI;
 import co.insou.refer.utils.ReferPlayer;
+import co.insou.refer.utils.ReferPlayerManager;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.event.Listener;
@@ -43,12 +45,14 @@ public class Refer extends JavaPlugin {
 	 */
 
 //	public boolean debugging = false;
-	public Economy econ;
+	private Economy econ;
 
-	public Config config;
+	private Config config;
 
-	public GUI gui;
-	public DB db;
+	private GUI gui;
+	private Database database;
+
+	private ReferPlayerManager referPlayerManager;
 
 	
 	private enum Load {
@@ -56,13 +60,16 @@ public class Refer extends JavaPlugin {
 	}
 
 	private Listener[] events = {
-		new PlayerJoin(), new PlayerQuit(), new InventoryClick(this), new InventoryAPI()
+		new PlayerJoin(this), new PlayerQuit(), new InventoryClick(this), new InventoryAPI()
 	};
 
+	@Override
 	public void onDisable () {
+		referPlayerManager.onDisable();
 		logLoad(Load.disabled);
 	}
 
+	@Override
 	public void onEnable () {
 		logLoad(Load.enabled);
 		initClasses();
@@ -76,6 +83,7 @@ public class Refer extends JavaPlugin {
 
 	private void initClasses() {
 		gui = new GUI(this);
+		referPlayerManager = new ReferPlayerManager(this);
 	}
 
 	public void log (String s) {
@@ -92,9 +100,9 @@ public class Refer extends JavaPlugin {
 
 	private boolean initDatabases () {
 		if (config.sql) {
-			db = new DB(DB.databaseType.sql, null, new ConnectionPool(this));
+			database = new SQLManager(this);
 		} else {
-			db = new DB(DB.databaseType.yaml, new Yaml(this), null);
+			database = new Yaml(this);
 		}
 		return true;
 	}
@@ -134,5 +142,17 @@ public class Refer extends JavaPlugin {
         econ = economyProvider.getProvider();
         return econ != null;
     }
+
+	public Database getReferDatabase() {
+		return database;
+	}
+
+	public ReferPlayerManager getReferPlayerManager() {
+		return referPlayerManager;
+	}
+
+	public Config getReferConfig() {
+		return config;
+	}
 	
 }
