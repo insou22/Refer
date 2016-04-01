@@ -1,6 +1,6 @@
 package co.insou.refer.gui.events;
 
-import co.insou.refer.gui.PageInventory;
+import co.insou.refer.gui.page.PageInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class PagesClickEvent extends ItemClickEvent {
     private static final HandlerList handlers = new HandlerList();
+
     public static HandlerList getHandlerList() {
         return handlers;
     }

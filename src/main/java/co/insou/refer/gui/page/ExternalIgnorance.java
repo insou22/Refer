@@ -1,0 +1,10 @@
+package co.insou.refer.gui.page;
+
+/**
+ * Created by insou on 30/01/2016.
+ */
+public enum ExternalIgnorance {
+    CLICKINV_OPEN_INV,
+    CLICKINV_DISPLAY_INVENTORY,
+    PLAYER_MANAGEMENT_HISTORY, PLAYER_MANAGEMENT_MENU, PLAYER_MANAGEMENT_SELECT_OFFLINE, PAGE_INVENTORY_CLICK
+}

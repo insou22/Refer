@@ -2,244 +2,213 @@ package co.insou.refer.config;
 
 import co.insou.refer.Refer;
 import co.insou.refer.utils.Reward;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Config {
 
-	private Refer refer;
-	private UpdateConfig updateConfig;
+    private Refer refer;
+    private UpdateConfig updateConfig;
 
-	public Config (Refer refer) {
-		this.refer = refer;
-		this.updateConfig = new UpdateConfig();
-		init();
-	}
-	
-	private boolean vaultEnabled = false;
-	private boolean sql = false;
-	private Sound requestSound;
+    public Config(Refer refer) {
+        this.refer = refer;
+        this.updateConfig = new UpdateConfig();
+        init();
+    }
 
-	private String sqlHostname;
-	private String sqlPort;
-	private String sqlDatabase;
-	private String sqlUsername;
-	private String sqlPassword;
+    private boolean vaultEnabled = false;
+    private boolean sql = false;
+    private Sound requestSound;
 
-	private int initSize;
-	private int maxActive;
-	private int maxWait;
-	private int maxIdle;
-	
-	private String guiTitle;
-	private int guiSize;
-	private Map<Integer, ItemStack> guiItems = new HashMap<>();
+    private boolean joinMessageEnabled = true;
+    private long joinMessageDelay = 60;
+    private String joinMessage = "&bWere you brought to the server by someone? Click here to refer them!";
+    private String joinHoverMessage = "&bClick here to refer them!";
 
-	private String playerGUITitleRefer;
-	private String playerGUITitleRequest;
+    private String sqlHostname;
+    private String sqlPort;
+    private String sqlDatabase;
+    private String sqlUsername;
+    private String sqlPassword;
 
-	private YamlConfiguration conf;
-	
-	private int getRewardNum;
+    private int initSize;
+    private int maxActive;
+    private int maxWait;
+    private int maxIdle;
 
-	private void init () {
-		File configFile = new File(refer.getDataFolder(), "config.yml");
-		if (!refer.getDataFolder().exists()) {
-			if (! refer.getDataFolder().mkdirs()) {
-				refer.log("Couldn't generate Data Folder");
-				Bukkit.getPluginManager().disablePlugin(refer);
-			}
-		}
-		if (!configFile.exists()) {
-			refer.saveDefaultConfig();
-		} 
-		conf = YamlConfiguration.loadConfiguration(configFile);
-		updateConfig.updateConfig(conf, conf.getDouble("config-version"));
-		setConfigValues();
-	}
-	
-	private void setConfigValues () {
-		vaultEnabled = conf.getBoolean("vault-enabled");
-		sql = conf.getBoolean("sql.enabled");
-		requestSound = Sound.valueOf(conf.getString("request-sound"));
-		if (sql) {
-			sqlHostname = conf.getString("sql.hostname");
-			sqlPort = conf.getString("sql.port");
-			sqlDatabase = conf.getString("sql.database");
-			sqlUsername = conf.getString("sql.username");
-			sqlPassword = conf.getString("sql.password");
-			initSize = conf.getInt("sql.connection-pool.initial-size");
-			maxActive = conf.getInt("sql.connection-pool.max-active");
-			maxWait = conf.getInt("sql.connection-pool.max-wait");
-			maxIdle = conf.getInt("sql.connection-pool.max-idle");
-		}
-		guiTitle = ChatColor.translateAlternateColorCodes('&', conf.getString("gui.title.selector"));
-		playerGUITitleRefer = ChatColor.translateAlternateColorCodes('&', conf.getString("gui.title.player.refer"));
-		playerGUITitleRequest = ChatColor.translateAlternateColorCodes('&', conf.getString("gui.title.player.request"));
-		//TODO NPEs
-		playerGUITitleRefer = "Refer Head Selector";
-		playerGUITitleRequest = "Request Head Selector";
-		guiSize = (conf.getInt("gui.size") / 9) * 9;
-		for (int i = 0; i < guiSize; i++) {
-			if (conf.contains("gui.items." + i)) {
-				Material mat = Material.valueOf(conf.getString("gui.items." + i + ".material"));
-				if (mat != null) {
-					ItemStack is = new ItemStack(mat);
-					ItemMeta im = is.getItemMeta();
-					String name = ChatColor.translateAlternateColorCodes('&', conf.getString("gui.items." + i + ".name"));
-					List<String> lore = conf.getStringList("gui.items." + i + ".lore");
-					for (int num = 0; num < lore.size(); num++) {
-						lore.set(num , ChatColor.translateAlternateColorCodes('&', lore.get(num)));
-					}
-					if (name.length() != 0) im.setDisplayName(name);
-					if (lore.size() != 0) im.setLore(lore);
-					is.setItemMeta(im);
-					guiItems.put(i, is);
-					continue;
-				}
-			}
-			guiItems.put(i, new ItemStack(Material.AIR));
-		}
-		
-	}
-	
-	public List<Reward> getRewards () {
-		
-		List<Reward> rewards = new ArrayList<>();
-		
-		for (String number : conf.getConfigurationSection("rewards").getKeys(false)) {
-			Integer num = Integer.valueOf(number);
-			if (num != null) {
-				Reward reward = getReward(num);
-				rewards.add(reward);
-			}
-		}
-		return rewards;
-	}
+    private YamlConfiguration conf;
 
-	public Reward getReward (int number) {
-		getRewardNum = number;
+    private void init() {
+        File configFile = new File(refer.getDataFolder(), "config.yml");
+        if (!refer.getDataFolder().exists()) {
+            if (!refer.getDataFolder().mkdirs()) {
+                refer.log("Couldn't generate Data Folder");
+                Bukkit.getPluginManager().disablePlugin(refer);
+                refer.disableOnLoad();
+            }
+        }
+        if (!configFile.exists()) {
+            refer.saveDefaultConfig();
+        }
+        conf = YamlConfiguration.loadConfiguration(configFile);
+        updateConfig.updateConfig(conf, conf.getDouble("config-version"));
+        setConfigValues();
+    }
 
-		Reward reward = new Reward()
-		.withMessage((String) get("message"))
-		.withMoney((Double) get("money"))
-		.withSound((String) get("sound"))
-		.withConsoleCommands(getList("console-commands"))
-		.withPlayerCommands(getList("player-commands"));
+    private void setConfigValues() {
+        vaultEnabled = conf.getBoolean("vault-enabled");
+        sql = conf.getBoolean("sql.enabled");
+        try {
+            requestSound = Sound.valueOf(conf.getString("request-sound"));
+        } catch (IllegalArgumentException e) {
+            refer.getLogger().severe("Could not load Sound " + conf.getString("request-sound"));
+            refer.getLogger().severe("Make sure it is valid and is typed correctly!");
+        }
+        joinMessageEnabled = conf.getBoolean("join-message.enabled");
+        if (joinMessageEnabled) {
+            joinMessage = conf.getString("join-message.message");
+            joinHoverMessage = conf.getString("join-message.hover");
+            joinMessageDelay = conf.getLong("join-message.delay");
+        }
+        if (sql) {
+            sqlHostname = conf.getString("sql.hostname");
+            sqlPort = conf.getString("sql.port");
+            sqlDatabase = conf.getString("sql.database");
+            sqlUsername = conf.getString("sql.username");
+            sqlPassword = conf.getString("sql.password");
+            initSize = conf.getInt("sql.connection-pool.initial-size");
+            maxActive = conf.getInt("sql.connection-pool.max-active");
+            maxWait = conf.getInt("sql.connection-pool.max-wait");
+            maxIdle = conf.getInt("sql.connection-pool.max-idle");
+        }
+        //TODO NPEs
+    }
 
-		if (conf.getBoolean(number + ".chance.enabled")) {
-			reward = reward
-					.withChancePercentage((Double) get("chance.percentage"))
-					.withChanceMessageWin((String) get("chance.messages.win"))
-					.withChanceMessageLose((String) get("chance.messages.lose"))
-					.withChanceMoneyWin((Double) get("chance.money.win"))
-					.withChanceMoneyLose((Double) get("chance.money.lose"))
-					.withChancePlayerCommandsWin(getList("chance.player-commands.win"))
-					.withChancePlayerCommandsLose(getList("chance.player-commands.lose"))
-					.withChanceConsoleCommandsWin(getList("chance.console-commands.win"))
-					.withChanceConsoleCommandsLose(getList("chance.console-commands.lose"))
-					.withChanceSoundWin((String) get("chance.sounds.win"))
-					.withChanceSoundLose((String) get("chance.sounds.lose"));
-		}
-		return reward;
-	}
-	
-	private Object get (String index) {
-		return conf.get(getRewardNum + "." + index);
-	}
+    public List<Reward> getRewards() {
 
-	private List<String> getList (String index) {
-		return conf.getStringList(getRewardNum + "." + index);
-	}
+        List<Reward> rewards = new ArrayList<>();
 
-	public boolean isVaultEnabled() {
-		return vaultEnabled;
-	}
+        for (String number : conf.getConfigurationSection("rewards").getKeys(false)) {
+            Integer num = Integer.valueOf(number);
+            if (num != null) {
+                Reward reward = getReward(num);
+                rewards.add(reward);
+            }
+        }
+        return rewards;
+    }
 
-	public boolean isSqlEnabled() {
-		return sql;
-	}
+    public Reward getReward(int number) {
+        Reward reward = new Reward(number);
+        reward.withMessage(getString(number, "message"));
+        reward.withMoney(getDouble(number, "money"));
+        reward.withSound(getString(number, "sound"));
+        reward.withConsoleCommands(getStringList(number, "console-commands"));
+        reward.withPlayerCommands(getStringList(number, "player-commands"));
 
-	public Sound getRequestSound() {
-		return requestSound;
-	}
+        if (getBoolean(number, "chance.enabled")) {
+            reward = reward
+                    .withChancePercentage(getDouble(number, "chance.percentage"))
+                    .withChanceMessageWin(getString(number, "chance.messages.win"))
+                    .withChanceMessageLose(getString(number, "chance.messages.lose"))
+                    .withChanceMoneyWin(getDouble(number, "chance.money.win"))
+                    .withChanceMoneyLose(getDouble(number, "chance.money.lose"))
+                    .withChancePlayerCommandsWin(getStringList(number, "chance.player-commands.win"))
+                    .withChancePlayerCommandsLose(getStringList(number, "chance.player-commands.lose"))
+                    .withChanceConsoleCommandsWin(getStringList(number, "chance.console-commands.win"))
+                    .withChanceConsoleCommandsLose(getStringList(number, "chance.console-commands.lose"))
+                    .withChanceSoundWin(getString(number, "chance.sounds.win"))
+                    .withChanceSoundLose(getString(number, "chance.sounds.lose"));
+        }
+        return reward;
+    }
 
-	public int getGetRewardNum() {
-		return getRewardNum;
-	}
+    private double getDouble(int rewardNum, String index) {
+        return conf.getDouble("rewards." + rewardNum + "." + index);
+    }
 
-	public boolean isSql() {
-		return sql;
-	}
+    private boolean getBoolean(int rewardNum, String index) {
+        return conf.getBoolean("rewards." + rewardNum + "." + index);
+    }
 
-	public String getSqlHostname() {
-		return sqlHostname;
-	}
+    private String getString(int rewardNum, String index) {
+        return conf.getString("rewards." + rewardNum + "." + index);
+    }
 
-	public String getSqlPort() {
-		return sqlPort;
-	}
+    private List<String> getStringList(int rewardNum, String index) {
+        return conf.getStringList("rewards." + rewardNum + "." + index);
+    }
 
-	public String getSqlDatabase() {
-		return sqlDatabase;
-	}
+    public boolean isVaultEnabled() {
+        return vaultEnabled;
+    }
 
-	public String getSqlUsername() {
-		return sqlUsername;
-	}
+    public boolean isSqlEnabled() {
+        return sql;
+    }
 
-	public String getSqlPassword() {
-		return sqlPassword;
-	}
+    public Sound getRequestSound() {
+        return requestSound;
+    }
 
-	public int getInitSize() {
-		return initSize;
-	}
+    public boolean isJoinMessageEnabled() {
+        return joinMessageEnabled;
+    }
 
-	public int getMaxActive() {
-		return maxActive;
-	}
+    public long getJoinMessageDelay() {
+        return joinMessageDelay;
+    }
 
-	public int getMaxWait() {
-		return maxWait;
-	}
+    public String getJoinMessage() {
+        return joinMessage;
+    }
 
-	public int getMaxIdle() {
-		return maxIdle;
-	}
+    public String getJoinHoverMessage() {
+        return joinHoverMessage;
+    }
 
-	public String getGuiTitle() {
-		return guiTitle;
-	}
+    public String getSqlHostname() {
+        return sqlHostname;
+    }
 
-	public int getGuiSize() {
-		return guiSize;
-	}
+    public String getSqlPort() {
+        return sqlPort;
+    }
 
-	public Map<Integer, ItemStack> getGuiItems() {
-		return guiItems;
-	}
+    public String getSqlDatabase() {
+        return sqlDatabase;
+    }
 
-	public String getPlayerGUITitleRefer() {
-		return playerGUITitleRefer;
-	}
+    public String getSqlUsername() {
+        return sqlUsername;
+    }
 
-	public String getPlayerGUITitleRequest() {
-		return playerGUITitleRequest;
-	}
+    public String getSqlPassword() {
+        return sqlPassword;
+    }
 
-	public YamlConfiguration getConf() {
-		return conf;
-	}
+    public int getInitSize() {
+        return initSize;
+    }
+
+    public int getMaxActive() {
+        return maxActive;
+    }
+
+    public int getMaxWait() {
+        return maxWait;
+    }
+
+    public int getMaxIdle() {
+        return maxIdle;
+    }
+
+    public YamlConfiguration getConf() {
+        return conf;
+    }
 }

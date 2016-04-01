@@ -1,6 +1,9 @@
-package co.insou.refer.gui;
+package co.insou.refer.gui.page;
 
+import co.insou.refer.Refer;
+import co.insou.refer.listeners.inventory.InventoryListener;
 import co.insou.refer.gui.events.PageCloseEvent;
+import co.insou.refer.player.ReferPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,12 +18,11 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-/**
- * Created by insou on 11/10/2015.
- */
-public abstract class ClickInventory<E> {
+public abstract class ClickInventory<E> implements ReferInventory {
 
-//    protected static JavaPlugin plugin;
+    private static final String PLUGIN_NAME = "Refer";
+
+    //    protected static JavaPlugin plugin;
     protected Inventory currentInventory;
     protected boolean inventoryInUse;
     private boolean modifiable;
@@ -28,7 +30,7 @@ public abstract class ClickInventory<E> {
     private boolean playerInventoryUsed;
     private ItemStack[] previousContents;
     private String inventoryName;
-    private HashMap savedData = new HashMap();
+    private HashMap<Object, Object> savedData = new HashMap<>();
 
     protected void saveContents() {
         this.previousContents = getPlayer().getInventory().getContents().clone();
@@ -70,7 +72,7 @@ public abstract class ClickInventory<E> {
         closeInventory(true);
     }
 
-    protected void onInventoryDrag(InventoryDragEvent event) {
+    public void onInventoryDrag(InventoryDragEvent event) {
         if (!isModifiable()) {
             for (int slot : event.getRawSlots()) {
                 if (checkInMenu(slot)) {
@@ -95,12 +97,13 @@ public abstract class ClickInventory<E> {
         return playerInventoryUsed;
     }
 
-    protected abstract void onInventoryClick(InventoryClickEvent event);
+    public abstract void onInventoryClick(InventoryClickEvent event);
 
     private void closeInventory(boolean forceClose, boolean restoreInventory) {
-        InventoryAPI.unregisterInventory(this);
+        InventoryListener.unregisterInventory(this);
         inventoryInUse = false;
         if (getPlayer().hasMetadata(getClass().getSimpleName())) {
+            //noinspection unchecked
             E[] invs = (E[]) getPlayer().getMetadata(getClass().getSimpleName()).get(0).value();
             if (invs[isPlayerInventory() ? 1 : 0] == this) {
                 invs[isPlayerInventory() ? 1 : 0] = null;
@@ -115,7 +118,7 @@ public abstract class ClickInventory<E> {
         if (isPlayerInventory() && restoreInventory) {
             getPlayer().getInventory().clear();
             getPlayer().getInventory().setContents(previousContents);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("Refer"), new Runnable() {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin(PLUGIN_NAME), new Runnable() {
                 public void run() {
                     getPlayer().updateInventory();
                 }
@@ -181,7 +184,7 @@ public abstract class ClickInventory<E> {
     /**
      * Internal method to open the inventory or switch them
      */
-    protected void openInv() {
+    public void openInv() {
         /**
          * If ever getting bugs with opening a inventory and items glitch and no itemclickevent fires. Make sure you cancel the
          * click event you used to get this.. And didn't open a new inventory as the old one closed.
@@ -189,9 +192,10 @@ public abstract class ClickInventory<E> {
         boolean isSwitchingInventory = isInventoryInUse();
         ItemStack heldItem = null;
         ClickInventory[] invs = new ClickInventory[2];
-        for (String inv : new String[] { "PageInventory", "NamedInventory", "AnvilInventory" }) {
+        for (String inv : new String[]{"PageInventory", "NamedInventory", "AnvilInventory"}) {
             if (getPlayer().hasMetadata(inv)) {
-                E[] invss = (E[]) (getPlayer().hasMetadata(inv) ? getPlayer().getMetadata(inv).get(0).value() : null);
+                //noinspection unchecked
+                E[] invss = (E[]) (getPlayer().hasMetadata(inv) ? getPlayer().getMetadata(inv).size() > 0 ? getPlayer().getMetadata(inv).get(0).value() : null : null);
                 if (invss != null) {
                     for (int i = 0; i < 2; i++) {
                         if (invss[i] != null) {
@@ -225,8 +229,18 @@ public abstract class ClickInventory<E> {
                     Class.forName("org.bukkit.craftbukkit." + c.getName().split("\\.")[3] + ".event.CraftEventFactory")
                             .getMethod("handleInventoryCloseEvent", c).invoke(null, player);
                     activeContainer.set(player, defaultContainer);
-                    if (!(this instanceof AnvilInventory))
+                    if (!(this instanceof AnvilInventory)) {
+                        if (currentInventory == null) {
+                            return;
+                        }
+                        ReferPlayer pluginPlayer = ((Refer) Bukkit.getPluginManager().getPlugin(PLUGIN_NAME)).getReferPlayerManager().getReferPlayer(getPlayer());
+                        if (pluginPlayer == null) {
+                            throw new IllegalArgumentException("PluginPlayer is null");
+                        }
+                        pluginPlayer.addExternalIgnore(ExternalIgnorance.CLICKINV_OPEN_INV);
                         getPlayer().openInventory(currentInventory);
+                        pluginPlayer.removeExternalIgnore(ExternalIgnorance.CLICKINV_OPEN_INV);
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -241,7 +255,7 @@ public abstract class ClickInventory<E> {
             }
         }
         if (!isSwitchingInventory) {
-            InventoryAPI.registerInventory(this);
+            InventoryListener.registerInventory(this);
             int slot = isPlayerInventory() ? 1 : 0;
             if (invs[slot] != null) {
                 if (invs[slot].inventoryInUse) {
@@ -251,10 +265,11 @@ public abstract class ClickInventory<E> {
                     this.previousContents = invs[1].previousContents;
                 }
             }
-            E[] inv = (E[]) (getPlayer().hasMetadata(getClass().getSimpleName()) ? getPlayer()
-                    .getMetadata(getClass().getSimpleName()).get(0).value() : (E[]) Array.newInstance(getClass(), 2));
+            //noinspection unchecked
+            E[] inv = (E[]) Array.newInstance(getClass(), 2);
+            //noinspection unchecked
             inv[slot] = (E) this;
-            getPlayer().setMetadata(getClass().getSimpleName(), new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("Refer"), inv));
+            getPlayer().setMetadata(getClass().getSimpleName(), new FixedMetadataValue(Bukkit.getPluginManager().getPlugin(PLUGIN_NAME), inv));
         } else {
             if (heldItem != null && heldItem.getType() != Material.AIR) {
                 getPlayer().setItemOnCursor(heldItem);
@@ -268,6 +283,24 @@ public abstract class ClickInventory<E> {
 
     public void setModifiable(boolean modifiable) {
         this.modifiable = modifiable;
+    }
+
+    public void displayInventory() {
+        if (player.getOpenInventory() != null) {
+            final ReferPlayer pluginPlayer = ((Refer) Bukkit.getPluginManager().getPlugin(PLUGIN_NAME)).getReferPlayerManager().getReferPlayer(player);
+            pluginPlayer.addExternalIgnore(ExternalIgnorance.CLICKINV_DISPLAY_INVENTORY);
+            player.closeInventory();
+            player.getOpenInventory().close();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin(PLUGIN_NAME), new Runnable() {
+                @Override
+                public void run() {
+                    openInv();
+                    pluginPlayer.removeExternalIgnore(ExternalIgnorance.CLICKINV_DISPLAY_INVENTORY);
+                }
+            }, 1);
+        } else {
+            openInv();
+        }
     }
 
     public abstract void setTitle(String newTitle);

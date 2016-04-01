@@ -1,35 +1,32 @@
 package co.insou.refer;
 
 import co.insou.refer.commands.ReferCommand;
-
-import java.util.logging.Logger;
-
+import co.insou.refer.config.Config;
 import co.insou.refer.database.Database;
-import co.insou.refer.database.sql.ConnectionPoolManager;
 import co.insou.refer.database.sql.SQLManager;
 import co.insou.refer.database.yml.Yaml;
-import co.insou.refer.events.InventoryClick;
-import co.insou.refer.events.PlayerJoin;
-import co.insou.refer.events.PlayerQuit;
-import co.insou.refer.gui.GUI;
-import co.insou.refer.gui.InventoryAPI;
-import co.insou.refer.utils.ReferPlayer;
-import co.insou.refer.utils.ReferPlayerManager;
+import co.insou.refer.gui.page.InventoryAPI;
+import co.insou.refer.listeners.inventory.InventoryClick;
+import co.insou.refer.listeners.inventory.InventoryClose;
+import co.insou.refer.listeners.inventory.InventoryListener;
+import co.insou.refer.listeners.misc.ReferListener;
+import co.insou.refer.listeners.player.PlayerJoin;
+import co.insou.refer.listeners.player.PlayerQuit;
+import co.insou.refer.messages.Messages;
+import co.insou.refer.player.ReferPlayerManager;
+import co.insou.refer.utils.EconomyHandler;
 import net.milkbowl.vault.economy.Economy;
-
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import co.insou.refer.config.Config;
-
 public class Refer extends JavaPlugin {
-	
+
 	/*
-	 * 
+     *
 	 * Refer TODO
-	 * 
-	 * Customizable GUI
+	 *
 	 * Error numbers / troubleshooting
 	 * // SQL
 	 * All messages
@@ -40,119 +37,157 @@ public class Refer extends JavaPlugin {
 	 * Time limits
 	 * Add chance delay
 	 * // Cull the static abuse
-	 * Choose player from GUI instead of chat
+	 * // Choose player from GUIManager instead of chat
 	 *
 	 */
 
+
+
+
+    // MASSIVE ARSE TODO:
+    // Make all database calls synchronized
+    // Make all database calls run asynchronously
+    // Cache all data
+    // Only make calls to the database to update
+
+
+
+
 //	public boolean debugging = false;
-	private Economy econ;
 
-	private Config config;
+    private EconomyHandler economyHandler;
 
-	private GUI gui;
-	private Database database;
+    private Config config;
 
-	private ReferPlayerManager referPlayerManager;
+    private Database database;
 
-	
-	private enum Load {
-		enabled, disabled
-	}
+    private ReferPlayerManager referPlayerManager;
 
-	private Listener[] events = {
-		new PlayerJoin(this), new PlayerQuit(), new InventoryClick(this), new InventoryAPI()
-	};
+    private boolean enabling = true;
+    private boolean disable = false;
 
-	@Override
-	public void onDisable () {
-		referPlayerManager.onDisable();
-		logLoad(Load.disabled);
-	}
+    private Listener[] events = {
+            new PlayerJoin(this), new PlayerQuit(this), new InventoryClick(this), new InventoryAPI(),
+            new InventoryClick(this), new InventoryClose(this), new ReferListener(this),
+            new InventoryListener(this)
+    };
 
-	@Override
-	public void onEnable () {
-		logLoad(Load.enabled);
-		initClasses();
-		initConfig();
-		initDatabases();
-		initReferPlayers();
-		initVault();
-		initCommands();
-		initEvents();
-	}
-
-	private void initClasses() {
-		gui = new GUI(this);
-		referPlayerManager = new ReferPlayerManager(this);
-	}
-
-	public void log (String s) {
-		Logger.getLogger("Refer").info("Refer: " + s);
-	}
-
-	private void logLoad (Load load) {
-		log("Refer v" + getDescription().getVersion() + " has been " + load + "!");
-	}
-	
-	private void initConfig() {
-		config = new Config(this);
-	}
-
-	private boolean initDatabases () {
-		if (config.sql) {
-			database = new SQLManager(this);
-		} else {
-			database = new Yaml(this);
-		}
-		return true;
-	}
-
-	private void initReferPlayers() {
-		ReferPlayer.loadReferPlayers();
-	}
-
-	private void initVault() {
-		if (config.vaultEnabled) {
-			if (!setupEconomy()) {
-				getServer().getPluginManager().disablePlugin(this);
-			}
-		}
-	}
-	
-	private void initCommands () {
-		getCommand("refer").setExecutor(new ReferCommand(this));
-	}
-
-	private void initEvents () {
-		for (Listener event : events) {
-			getServer().getPluginManager().registerEvents(event, this);
-		}
-	}
-	
-	private boolean setupEconomy () {
-		if (getServer().getPluginManager().getPlugin("Vault") == null) {
-			log("Refer error: ENABLE-VAULT is set to true, but Vault is not installed! Disabling refer!");
-			return false;
-		}
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider == null) {
-        	log("Refer error: ENABLE-VAULT is set to true, Vault is installed, but you do not have a Vault-Supported economy plugin! Disabling refer!");
-        	return false;
-        }
-        econ = economyProvider.getProvider();
-        return econ != null;
+    @Override
+    public void onDisable() {
+        referPlayerManager.onDisable();
     }
 
-	public Database getReferDatabase() {
-		return database;
-	}
+    @Override
+    public void onEnable() {
+        initClasses();
+        if (disable) return;
+        initConfig();
+        if (disable) return;
+        initDatabases();
+        if (disable) return;
+        initMessages();
+        if (disable) return;
+        initVault();
+        if (disable) return;
+        initReferPlayers();
+        if (disable) return;
+        initCommands();
+        if (disable) return;
+        initEvents();
+        if (disable) return;
+        checkExceptions();
+    }
 
-	public ReferPlayerManager getReferPlayerManager() {
-		return referPlayerManager;
-	}
+    private void initClasses() {
+        referPlayerManager = new ReferPlayerManager(this);
+    }
 
-	public Config getReferConfig() {
-		return config;
-	}
-	
+    public void log(String s) {
+        getLogger().info(s);
+    }
+
+    private void initConfig() {
+        config = new Config(this);
+    }
+
+    private boolean initDatabases() {
+        if (config.isSqlEnabled()) {
+            database = new SQLManager(this);
+        } else {
+            database = new Yaml(this);
+        }
+        return true;
+    }
+
+    private void initMessages() {
+        new Messages(this);
+    }
+
+    private void initReferPlayers() {
+        referPlayerManager.loadReferPlayers();
+    }
+
+    private void initVault() {
+        if (!setupEconomy()) {
+            getServer().getPluginManager().disablePlugin(this);
+            disable = true;
+        }
+    }
+
+    private void initCommands() {
+        getCommand("refer").setExecutor(new ReferCommand(this));
+    }
+
+    private void initEvents() {
+        for (Listener event : events) {
+            getServer().getPluginManager().registerEvents(event, this);
+        }
+    }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            log("Refer error: Vault is not installed! Disabling refer!");
+            return false;
+        }
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider == null) {
+            log("Refer error: Vault is installed, but you do not have a Vault-Supported economy plugin! Disabling refer!");
+            return false;
+        }
+        economyHandler = new EconomyHandler(economyProvider.getProvider());
+        return economyHandler.isSetup();
+    }
+
+    private void checkExceptions() {
+        enabling = false;
+        if (disable) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            getLogger().info("Refer has been disabled due to a severe internal error - Check the logs!");
+        }
+    }
+
+    public Database getReferDatabase() {
+        return database;
+    }
+
+    public ReferPlayerManager getReferPlayerManager() {
+        return referPlayerManager;
+    }
+
+    public Config getReferConfig() {
+        return config;
+    }
+
+    public boolean isEnabling() {
+        return enabling;
+    }
+
+    public void disableOnLoad() {
+        disable = true;
+    }
+
+    public EconomyHandler getEconomyHandler() {
+        return economyHandler;
+    }
+
 }

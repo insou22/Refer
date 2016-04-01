@@ -1,7 +1,6 @@
-package co.insou.refer.gui;
+package co.insou.refer.gui.page;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,9 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by insou on 11/10/2015.
- */
 public class InventoryAPI implements Listener {
 
     private static ArrayList<ClickInventory> inventories = new ArrayList<ClickInventory>();

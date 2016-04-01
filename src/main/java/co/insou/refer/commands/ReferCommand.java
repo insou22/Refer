@@ -1,46 +1,39 @@
 package co.insou.refer.commands;
 
 import co.insou.refer.Refer;
-import co.insou.refer.gui.GUI;
+import co.insou.refer.gui.page.GUIPageType;
+import co.insou.refer.player.ReferPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import co.insou.refer.utils.ReferPlayer;
-
 public class ReferCommand implements CommandExecutor {
 
-	private Refer plugin;
+    private Refer plugin;
 
-	public ReferCommand (Refer plugin) {
-		this.plugin = plugin;
-	}
+    public ReferCommand(Refer plugin) {
+        this.plugin = plugin;
+    }
 
 
-	public boolean onCommand (CommandSender s, Command c, String l, String[] args) {
-		if (l.equalsIgnoreCase("refer")) {
-			if (s instanceof Player) {
-				ReferPlayer p = ReferPlayer.getReferPlayer((Player) s);
-				switch (args.length) {
-				case 0:
-					plugin.gui.openGUI(p);
-					break;
-				case 1:
-					break;
-				case 2:
-					break;
-				case 3:
-					break;
-				case 4:
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		
-		return false;
-	}
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("refer")) {
+            if (sender instanceof Player) {
+                ReferPlayer p = plugin.getReferPlayerManager().getReferPlayer((Player) sender);
+                if (p == null) {
+                    sender.sendMessage(ChatColor.RED + "Internal ReferPlayer is null!");
+                    return false;
+                }
+                if (args.length > 0 && args[0].equalsIgnoreCase("admin")) {
+                    p.openPage(p.getPage(GUIPageType.ADMIN_MENU));
+                    return false;
+                }
+                p.openPage(p.getPage(GUIPageType.MAIN_MENU));
+            }
+        }
+        return false;
+    }
 
 }

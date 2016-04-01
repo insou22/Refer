@@ -1,13 +1,10 @@
 package co.insou.refer.gui.events;
 
-import co.insou.refer.gui.PageInventory;
+import co.insou.refer.gui.page.PageInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
- * Created by insou on 11/10/2015.
- */
 public class PageCloseEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 

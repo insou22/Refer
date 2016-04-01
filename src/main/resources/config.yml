@@ -21,6 +21,7 @@
 #                                                                                                                                                                                                      gg:::::::::::::g  
 #                                                                                                                                                                                                        ggg::::::ggg    
 #                                                                                                                                                                                                           gggggg       
+
 sql:
   enabled: false
   hostname: 'sql.url.com'
@@ -34,15 +35,15 @@ sql:
     max-wait: 20
     max-idle: 300
 
-gui:
-  size: 9
-  title:
-    selector: '&aRefer Selector'
-    player:
-      refer: '&aRefer Head Selector'
-      request: '&aRequest Head Selector'
+request-sound: 'BLOCK_NOTE_PLING'
 
-request-sound: 'NOTE_PLING'
+join-message:
+  enabled: true
+  delay-ticks: 60
+  message: '&bWere you brought to the server by someone? Click here to refer them!'
+  hover: '&bClick here to refer them!'
+
+# TODO: Literally this
 
 enable-vault: false
 requestSound: NOTE_PLING
@@ -51,58 +52,35 @@ rewards:
     message: '&3Nice job! You got your first reference!'
     money: 500.5
     sound: NOTE_PLING
-    chance:
-      enabled: false
-      percentage: 50.0
-      messages:
-        win: '&aYou won! Nice job!'
-        lose: '&cYou didn''t win this time... Better luck next time!'
-      money: 500.0
-      player-commands:
-      - spawn
-      - refer help
-      console-commands:
-      - kit winner %player%
-      - sudo %player% spawn
-      sounds:
-        win: NOTE_PLING
-        lose: CAT_MEOW
     console-commands:
     - kit refer1 %player%
     - kit superpickaxe %player%
     - sudo %player% spawn
     player-commands:
     - spawn
-    - refer help
+    chance:
+      enabled: false
+      percentage: 50.0
+      messages:
+        win: '&aYou won! Nice job!'
+        lose: '&cYou didn''t win this time... Better luck next time!'
+      money: 500.0
+      player-commands:
+      - spawn
+      console-commands:
+      - kit winner %player%
+      - sudo %player% spawn
+      sounds:
+        win: NOTE_PLING
+        lose: CAT_MEOW
   '5':
     message: '&aCongrats on getting 5 references!!'
     money: 1000
     sound: CAT_MEOW
-    chance:
-      enabled: false
-      percentage: 50.0
-      messages:
-        win: '&aYou won! Nice job!'
-        lose: '&cYou didn''t win this time... Better luck next time!'
-      money: 500.0
-      player-commands:
-      - spawn
-      - refer help
-      console-commands:
-      - kit winner %player%
-      - sudo %player% spawn
-      sounds:
-        win: NOTE_PLING
-        lose: CAT_MEOW
     console-commands:
     - kit refer5 %player%
     player-commands:
     - spawn
-    - refer help
-  '100':
-    message: '&bDamn you are dedicated - legend!'
-    money: 5000
-    sound: WOLF_BARK
     chance:
       enabled: false
       percentage: 50.0
@@ -112,16 +90,34 @@ rewards:
       money: 500.0
       player-commands:
       - spawn
-      - refer help
       console-commands:
       - kit winner %player%
       - sudo %player% spawn
       sounds:
         win: NOTE_PLING
         lose: CAT_MEOW
+  '100':
+    message: '&bDamn you are dedicated - legend!'
+    money: 5000
+    sound: WOLF_BARK
     console-commands:
     - kit refer100 %player%
     player-commands:
     - spawn
-    - refer help
+    chance:
+      enabled: false
+      percentage: 50.0
+      messages:
+        win: '&aYou won! Nice job!'
+        lose: '&cYou didn''t win this time... Better luck next time!'
+      money: 500.0
+      player-commands:
+      - spawn
+      console-commands:
+      - kit winner %player%
+      - sudo %player% spawn
+      sounds:
+        win: NOTE_PLING
+        lose: CAT_MEOW
+
 config-version: 1.7

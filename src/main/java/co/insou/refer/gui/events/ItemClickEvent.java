@@ -1,6 +1,6 @@
 package co.insou.refer.gui.events;
 
-import co.insou.refer.gui.ClickInventory;
+import co.insou.refer.gui.page.ClickInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -8,9 +8,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by insou on 11/10/2015.
- */
 public abstract class ItemClickEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();

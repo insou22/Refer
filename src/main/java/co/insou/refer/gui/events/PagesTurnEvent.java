@@ -1,6 +1,6 @@
 package co.insou.refer.gui.events;
 
-import co.insou.refer.gui.PageInventory;
+import co.insou.refer.gui.page.PageInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;

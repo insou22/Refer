@@ -1,7 +1,9 @@
-package co.insou.refer.gui;
+package co.insou.refer.gui.page;
 
+import co.insou.refer.Refer;
 import co.insou.refer.gui.events.PagesClickEvent;
 import co.insou.refer.gui.events.PagesTurnEvent;
+import co.insou.refer.player.ReferPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,16 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-/**
- * Created by insou on 11/10/2015.
- */
+import java.util.*;
 
 public final class PageInventory extends ClickInventory {
+
+    private static final String PLUGIN_NAME = "Refer";
 
     protected ItemStack backAPage, forwardsAPage, exitInventory;
     protected int currentPage;
@@ -28,6 +25,8 @@ public final class PageInventory extends ClickInventory {
     protected HashMap<Integer, ItemStack[]> pages = new HashMap<>();
     protected String title = "Inventory";
     private String titleFormat = "%Title% - Page %Page%";
+
+    private Map<Integer, Map<Integer, GUIPageType>> pageItems = new HashMap<>();
 
     public PageInventory(Player player) {
         this(null, player);
@@ -43,6 +42,7 @@ public final class PageInventory extends ClickInventory {
 
     public PageInventory(String inventoryName, Player player) {
         super(inventoryName, player);
+        title = inventoryName;
     }
 
     public PageInventory(String inventoryName, Player player, boolean dymanicInventory) {
@@ -109,7 +109,7 @@ public final class PageInventory extends ClickInventory {
     }
 
     /**
-     * Get pages
+     * Get page
      */
     public HashMap<Integer, ItemStack[]> getPages() {
         return pages;
@@ -124,7 +124,8 @@ public final class PageInventory extends ClickInventory {
         return this.pageDisplayedInTitle;
     }
 
-    protected void onInventoryClick(InventoryClickEvent event) {
+    @Override
+    public void onInventoryClick(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
         if (this.checkInMenu(event.getRawSlot())) {
             if (item != null) {
@@ -139,6 +140,13 @@ public final class PageInventory extends ClickInventory {
                     Bukkit.getPluginManager().callEvent(newEvent);
                     if (!newEvent.isCancelled()) {
                         setPage(getCurrentPage() + newPage);
+                        ReferPlayer player = ((Refer) Bukkit.getPluginManager().getPlugin(PLUGIN_NAME)).getReferPlayerManager().getReferPlayer(getPlayer());
+                        if (player == null) {
+                            throw new IllegalArgumentException("PluginPlayer is null");
+                        }
+                        player.addExternalIgnore(ExternalIgnorance.PAGE_INVENTORY_CLICK);
+                        openInv();
+                        player.removeExternalIgnore(ExternalIgnorance.PAGE_INVENTORY_CLICK);
                     }
                     event.setCancelled(true);
                     return;
@@ -247,10 +255,15 @@ public final class PageInventory extends ClickInventory {
                         getPageTitle()))) {
                     currentInventory = Bukkit.createInventory(null, pageItems.length, getPageTitle());
                     currentInventory.setContents(pageItems);
-                    openInv();
+//                    openInv();
                 } else {
                     setItems(pageItems);
                 }
+            } else {
+                ItemStack[] pageItems = getItemsForPage();
+                currentInventory = Bukkit.createInventory(null, pageItems.length, getPageTitle());
+                currentInventory.setContents(pageItems);
+//                openInv();
             }
         }
     }
@@ -276,14 +289,14 @@ public final class PageInventory extends ClickInventory {
     }
 
     /**
-     * Auto fills out the pages with these items
+     * Auto fills out the page with these items
      */
     public void setPages(List<ItemStack> allItems) {
         setPages(allItems.toArray(new ItemStack[allItems.size()]));
     }
 
     /**
-     * Auto fills out the pages with these items
+     * Auto fills out the page with these items
      */
     public void setPages(ItemStack... allItems) {
         pages.clear();
@@ -344,4 +357,31 @@ public final class PageInventory extends ClickInventory {
         }
     }
 
+    @Override
+    public void setPageItem(int pageNumber, int slot, GUIPageType page) {
+        Map<Integer, GUIPageType> kv = pageItems.get(pageNumber);
+        if (kv == null) kv = new HashMap<>();
+        kv.put(slot, page);
+        pageItems.put(pageNumber, kv);
+    }
+
+    @Override
+    public GUIPageType getPageItem(int pageNumber, int slot) {
+        return pageItems.get(pageNumber) != null ? pageItems.get(pageNumber).get(slot) : null;
+    }
+
+    @Override
+    public boolean isPageItem(int pageNumber, int slot) {
+        return getPageItem(pageNumber, slot) != null;
+    }
+
+    @Override
+    public GUIPageType getPageItem(int slot) {
+        return getPageItem(currentPage, slot);
+    }
+
+    @Override
+    public boolean isPageItem(int slot) {
+        return isPageItem(currentPage, slot);
+    }
 }
