@@ -1,4 +1,4 @@
-package mkremins.fanciful;
+package co.insou.refer.internals.mkremins.fanciful;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;

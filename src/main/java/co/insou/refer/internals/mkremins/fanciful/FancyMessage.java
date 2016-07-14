@@ -1,4 +1,4 @@
-package mkremins.fanciful;
+package co.insou.refer.internals.mkremins.fanciful;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import static mkremins.fanciful.TextualComponent.rawText;
+import static co.insou.refer.internals.mkremins.fanciful.TextualComponent.rawText;
 
 /**
  * Represents a formattable message. Such messages can use elements such as colors, formatting codes, hover and click data, and other features provided by the vanilla Minecraft <a href="http://minecraft.gamepedia.com/Tellraw#Raw_JSON_Text">JSON message formatter</a>.

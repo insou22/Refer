@@ -1,4 +1,4 @@
-package mkremins.fanciful;
+package co.insou.refer.internals.mkremins.fanciful;
 
 import com.google.gson.stream.JsonWriter;
 

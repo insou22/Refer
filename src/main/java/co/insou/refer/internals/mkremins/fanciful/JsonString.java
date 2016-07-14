@@ -1,4 +1,4 @@
-package mkremins.fanciful;
+package co.insou.refer.internals.mkremins.fanciful;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package net.amoebaman.util;
+package co.insou.refer.internals.net.amoebaman.util;
 
 import org.apache.commons.lang.Validate;
 
