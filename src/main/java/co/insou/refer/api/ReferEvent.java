@@ -6,9 +6,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
- * Created by insou on 10/10/2015.
- */
 public class ReferEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();

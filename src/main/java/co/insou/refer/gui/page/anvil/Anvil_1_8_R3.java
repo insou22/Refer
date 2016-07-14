@@ -84,7 +84,7 @@ public class Anvil_1_8_R3 extends AnvilGUI {
 
                         if (clickEvent.getWillClose()) {
                             closing = true;
-                            Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("Editor"), new Runnable() {
+                            Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin("Refer"), new Runnable() {
                                 @Override
                                 public void run() {
                                     event.getWhoClicked().closeInventory();
@@ -122,7 +122,7 @@ public class Anvil_1_8_R3 extends AnvilGUI {
             }
         };
 
-        Bukkit.getPluginManager().registerEvents(listener, Bukkit.getPluginManager().getPlugin("Editor")); //Replace with instance of main class
+        Bukkit.getPluginManager().registerEvents(listener, Bukkit.getPluginManager().getPlugin("Refer")); //Replace with instance of main class
     }
 
     public Player getPlayer() {

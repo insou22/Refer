@@ -1,6 +1,8 @@
 package co.insou.refer.utils;
 
+import co.insou.refer.Refer;
 import co.insou.refer.player.ReferPlayer;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
@@ -9,25 +11,45 @@ import java.util.Random;
 
 public class Reward {
 
+    @Getter
     private int referencesRequired;
 
+    @Getter
     private String message;
+    @Getter
     private Double money;
+    @Getter
     private Sound sound;
+    @Getter
     private List<String> consoleCommands;
+    @Getter
     private List<String> playerCommands;
 
+    @Getter
     private boolean chance = false;
+    @Getter
+    private long chanceDelay;
+    @Getter
     private Double chancePercentage;
+    @Getter
     private String chanceMessageWin;
+    @Getter
     private String chanceMessageLose;
+    @Getter
     private Double chanceMoneyWin;
+    @Getter
     private Double chanceMoneyLose;
+    @Getter
     private List<String> chancePlayerCommandsWin;
+    @Getter
     private List<String> chancePlayerCommandsLose;
+    @Getter
     private List<String> chanceConsoleCommandsWin;
+    @Getter
     private List<String> chanceConsoleCommandsLose;
+    @Getter
     private Sound chanceSoundWin;
+    @Getter
     private Sound chanceSoundLose;
 
 
@@ -46,7 +68,11 @@ public class Reward {
     }
 
     public Reward withSound(String sound) {
-        this.sound = Sound.valueOf(sound);
+        try {
+            this.sound = Sound.valueOf(sound);
+        } catch (IllegalArgumentException e) {
+            System.out.println("[Refer] ERROR! Tried to use a sound that didn't exist: " + sound);
+        }
         return this;
     }
 
@@ -64,82 +90,92 @@ public class Reward {
 
     public Reward withChancePercentage(Double percentage) {
         this.chancePercentage = percentage;
-        chance = true;
         return this;
     }
 
     public Reward withChanceMessageWin(String message) {
         this.chanceMessageWin = message;
-        chance = true;
         return this;
     }
 
     public Reward withChanceMessageLose(String message) {
         this.chanceMessageLose = message;
-        chance = true;
         return this;
     }
 
     public Reward withChanceMoneyWin(Double money) {
         this.chanceMoneyWin = money;
-        chance = true;
         return this;
     }
 
     public Reward withChanceMoneyLose(Double money) {
         this.chanceMoneyLose = money;
-        chance = true;
         return this;
     }
 
     public Reward withChancePlayerCommandsWin(List<String> commands) {
         this.chancePlayerCommandsWin = commands;
-        chance = true;
         return this;
     }
 
     public Reward withChancePlayerCommandsLose(List<String> commands) {
         this.chancePlayerCommandsLose = commands;
-        chance = true;
         return this;
     }
 
     public Reward withChanceConsoleCommandsWin(List<String> commands) {
         this.chanceConsoleCommandsWin = commands;
-        chance = true;
         return this;
     }
 
     public Reward withChanceConsoleCommandsLose(List<String> commands) {
         this.chanceConsoleCommandsLose = commands;
-        chance = true;
         return this;
     }
 
     public Reward withChanceSoundWin(String sound) {
         this.chanceSoundWin = Sound.valueOf(sound);
-        chance = true;
         return this;
     }
 
     public Reward withChanceSoundLose(String sound) {
         this.chanceSoundLose = Sound.valueOf(sound);
-        chance = true;
         return this;
     }
 
-    public void rewardPlayer(ReferPlayer p) {
-        p.sendFormattedMessage(message);
-        p.addMoney(money);
-        p.playSound(sound);
-        for (String cmd : consoleCommands) {
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), p.replaceMessage(cmd));
+    public Reward withChanceDelay(long ticks) {
+        this.chanceDelay = ticks;
+        if (chanceDelay < 0) {
+            chanceDelay = 0;
         }
-        for (String cmd : playerCommands) {
-            p.getPlayer().performCommand(p.replaceMessage(cmd));
+        return this;
+    }
+
+    public void rewardPlayer(final ReferPlayer p) {
+        p.sendFormattedMessage(message);
+        if (money != null && ((Refer) Bukkit.getPluginManager().getPlugin("Refer")).isEconomyEnabled()) {
+            p.addMoney(money);
+        }
+        if (sound != null) {
+            p.playSound(sound);
+        }
+        if (consoleCommands != null) {
+            for (String cmd : consoleCommands) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), p.replaceMessage(cmd));
+            }
+        }
+        if (playerCommands != null) {
+            for (String cmd : playerCommands) {
+                p.getPlayer().performCommand(p.replaceMessage(cmd));
+            }
         }
         if (chance) {
-            runChance(p);
+            Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Refer"), new Runnable() {
+                @Override
+                public void run() {
+                    runChance(p);
+                }
+            }, chanceDelay);
         }
     }
 
@@ -149,28 +185,41 @@ public class Reward {
         double randomPercentage = randomInt / 100;
         if (chancePercentage >= randomPercentage) {
             p.sendFormattedMessage(chanceMessageWin);
-            p.addMoney(chanceMoneyWin);
-            p.playSound(chanceSoundWin);
-            for (String cmd : chanceConsoleCommandsWin) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), p.replaceMessage(cmd));
+            if (money != null && ((Refer) Bukkit.getPluginManager().getPlugin("Refer")).isEconomyEnabled()) {
+                p.addMoney(chanceMoneyWin);
             }
-            for (String cmd : chancePlayerCommandsWin) {
-                p.getPlayer().performCommand(p.replaceMessage(cmd));
+            if (sound != null) {
+                p.playSound(chanceSoundWin);
+            }
+            if (chanceConsoleCommandsWin != null) {
+                for (String cmd : chanceConsoleCommandsWin) {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), p.replaceMessage(cmd));
+                }
+            }
+            if (chancePlayerCommandsWin != null) {
+                for (String cmd : chancePlayerCommandsWin) {
+                    p.getPlayer().performCommand(p.replaceMessage(cmd));
+                }
             }
         } else {
             p.sendFormattedMessage(chanceMessageLose);
-            p.addMoney(chanceMoneyLose);
-            p.playSound(chanceSoundLose);
-            for (String cmd : chanceConsoleCommandsLose) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), p.replaceMessage(cmd));
+            if (chanceMoneyLose != null && ((Refer) Bukkit.getPluginManager().getPlugin("Refer")).isEconomyEnabled()) {
+                p.addMoney(chanceMoneyLose);
             }
-            for (String cmd : chancePlayerCommandsLose) {
-                p.getPlayer().performCommand(p.replaceMessage(cmd));
+            if (chanceSoundLose != null) {
+                p.playSound(chanceSoundLose);
+            }
+            if (chanceConsoleCommandsLose != null) {
+                for (String cmd : chanceConsoleCommandsLose) {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), p.replaceMessage(cmd));
+                }
+            }
+            if (chancePlayerCommandsLose != null) {
+                for (String cmd : chancePlayerCommandsLose) {
+                    p.getPlayer().performCommand(p.replaceMessage(cmd));
+                }
             }
         }
     }
 
-    public int getReferencesRequired() {
-        return referencesRequired;
-    }
 }

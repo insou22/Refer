@@ -67,26 +67,35 @@ public class PlayerManagementHistoryPage extends GUIPage {
 
     @Override
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getCursor() == null) {
+//        System.out.println("1 baose");
+        if (e.getCurrentItem() == null) {
             return;
         }
-        ItemStack is = e.getCursor();
+//        System.out.println("2 baose");
+        ItemStack is = e.getCurrentItem();
         if (!e.getClickedInventory().equals(e.getView().getTopInventory())) {
             return;
         }
+//        System.out.println("3 baose");
         if (is.getType() != Material.SKULL_ITEM) {
             return;
         }
+//        System.out.println("4 baose");
         if (e.getClick() != ClickType.RIGHT) {
             return;
         }
+//        System.out.println("69 baose");
         int id;
         try {
+//            System.out.println("5 baose");
             id = Integer.parseInt(is.getItemMeta().getLore().get(7).substring((ChatColor.AQUA + "ID: ").length()));
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
+//            System.out.println("6 baose");
             return;
         }
+//        System.out.println("7 baose");
         refer.getReferDatabase().deleteHistory(id);
+//        System.out.println("8 baose");
         refresh();
     }
 

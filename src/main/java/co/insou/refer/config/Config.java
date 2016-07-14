@@ -56,7 +56,7 @@ public class Config {
             refer.saveDefaultConfig();
         }
         conf = YamlConfiguration.loadConfiguration(configFile);
-        updateConfig.updateConfig(conf, conf.getDouble("config-version"));
+        conf = updateConfig.updateConfig(conf, conf.getDouble("config-version"));
         setConfigValues();
     }
 
@@ -106,13 +106,16 @@ public class Config {
     public Reward getReward(int number) {
         Reward reward = new Reward(number);
         reward.withMessage(getString(number, "message"));
-        reward.withMoney(getDouble(number, "money"));
+        if (refer.isEconomyEnabled()) {
+            reward.withMoney(getDouble(number, "money"));
+        }
         reward.withSound(getString(number, "sound"));
         reward.withConsoleCommands(getStringList(number, "console-commands"));
         reward.withPlayerCommands(getStringList(number, "player-commands"));
 
         if (getBoolean(number, "chance.enabled")) {
             reward = reward
+                    .withChanceDelay(conf.getLong("rewards." + number + ".chance.delay-ticks"))
                     .withChancePercentage(getDouble(number, "chance.percentage"))
                     .withChanceMessageWin(getString(number, "chance.messages.win"))
                     .withChanceMessageLose(getString(number, "chance.messages.lose"))

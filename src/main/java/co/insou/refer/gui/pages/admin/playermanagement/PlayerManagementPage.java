@@ -33,10 +33,10 @@ public class PlayerManagementPage extends GUIPage {
 
     private void setup() {
 
-        System.out.println("Breadcrumb:");
-        for (GUIPage page : player.getBreadcrumb()) {
-            System.out.println("- " + page.getClass().getName());
-        }
+//        System.out.println("Breadcrumb:");
+//        for (GUIPage page : player.getBreadcrumb()) {
+//            System.out.println("- " + page.getClass().getName());
+//        }
 
         StandardInventory inventory = new StandardInventory(player, 27, title);
 
@@ -188,23 +188,23 @@ public class PlayerManagementPage extends GUIPage {
     }
 
     private void refresh() {
-        System.out.println("About to refresh");
+//        System.out.println("About to refresh");
         player.addExternalIgnore(ExternalIgnorance.PLAYER_MANAGEMENT_MENU);
-        System.out.println("Breadcrumb: ");
-        for (GUIPage page : player.getBreadcrumb()) {
-            System.out.println("- " + page.getClass().getName());
-        }
-        System.out.println("ExternalIgnore: ");
-        for (ExternalIgnorance ignorance : player.getExternalIgnores()) {
-            System.out.println("- " + ignorance.toString());
-        }
+//        System.out.println("Breadcrumb: ");
+//        for (GUIPage page : player.getBreadcrumb()) {
+//            System.out.println("- " + page.getClass().getName());
+//        }
+//        System.out.println("ExternalIgnore: ");
+//        for (ExternalIgnorance ignorance : player.getExternalIgnores()) {
+//            System.out.println("- " + ignorance.toString());
+//        }
         player.openUndocumentedPage(new PlayerManagementPage(player, manage));
-        System.out.println("Opening now...");
+//        System.out.println("Opening now...");
         Bukkit.getScheduler().scheduleSyncDelayedTask(refer, new Runnable() {
             @Override
             public void run() {
                 player.removeExternalIgnore(ExternalIgnorance.PLAYER_MANAGEMENT_MENU);
-                System.out.println("All done bruv");
+//                System.out.println("All done bruv");
             }
         }, 2);
     }

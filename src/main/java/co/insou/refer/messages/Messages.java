@@ -30,7 +30,7 @@ public class Messages {
                 if (defaultFile.exists()) {
                     Files.copy(defaultFile.toPath(), configFile.toPath());
                 } else {
-                    System.out.println("default messages file " + defaultFile.toPath().toString() + " not found!");
+                    System.out.println("Default messages file " + defaultFile.toPath().toString() + " not found!");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -17,8 +17,13 @@ public abstract class AnvilGUI implements ReferInventory {
                 return new Anvil_1_8_R3(player, clickHandler, closeHandler);
             case "v1_9_R1.":
                 return new Anvil_1_9_R1(player, clickHandler, closeHandler);
+            case "v1_9_R2.":
+                return new Anvil_1_9_R2(player, clickHandler, closeHandler);
+            case "v1_10_R1.":
+                return new Anvil_1_10_R1(player, clickHandler, closeHandler);
             default:
-                return new Anvil_1_9_R1(player, clickHandler, closeHandler);
+                System.out.println("[Refer] ERROR: Could not find server version! Are you running pre-1.8 or sub-1.10.2?");
+                return new Anvil_1_10_R1(player, clickHandler, closeHandler);
         }
     }
 

@@ -11,9 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-/**
- * Created by insou on 14/02/2016.
- */
 public class AdminMenuPage extends GUIPage {
 
     private final String title = ChatColor.GREEN + "Refer > Admin CP";
@@ -68,10 +65,11 @@ public class AdminMenuPage extends GUIPage {
                         .withDisplayName(ChatColor.AQUA + "Rewards")
                         .withLore(
                                 ChatColor.AQUA + "View / Edit / Create refer",
-                                ChatColor.AQUA + "rewards in-game."
+                                ChatColor.AQUA + "rewards in-game.",
+                                ChatColor.RED + "Work-in-progress!"
                         )
         );
-        inventory.setItem(15, rewards, GUIPageType.REWARDS);
+        inventory.setItem(15, rewards/*, GUIPageType.REWARDS_LIST*/);
 
         this.display = inventory;
     }

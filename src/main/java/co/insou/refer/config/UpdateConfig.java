@@ -12,7 +12,10 @@ public class UpdateConfig {
     }
 
     public YamlConfiguration update19to20(YamlConfiguration config) {
-
+        for (String key : config.getConfigurationSection("rewards").getKeys(false)) {
+            config.set("rewards." + key + ".chance.delay-ticks", 0L);
+        }
+        config.set("config-version", 2.0);
         return config;
     }
 

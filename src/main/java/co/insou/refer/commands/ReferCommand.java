@@ -27,7 +27,15 @@ public class ReferCommand implements CommandExecutor {
                     return false;
                 }
                 if (args.length > 0 && args[0].equalsIgnoreCase("admin")) {
+                    if (!p.getPlayer().hasPermission("refer.admin")) {
+                        p.sendFormattedMessage("&cYou don't have permission to do this!");
+                        return false;
+                    }
                     p.openPage(p.getPage(GUIPageType.ADMIN_MENU));
+                    return false;
+                }
+                if (!p.getPlayer().hasPermission("refer.use")) {
+                    p.sendFormattedMessage("&cYou don't have permission to do this!");
                     return false;
                 }
                 p.openPage(p.getPage(GUIPageType.MAIN_MENU));

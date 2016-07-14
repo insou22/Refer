@@ -1,5 +1,5 @@
 name: Refer
-version: 2.0
+version: 2.1.1
 description: Refer custom plugin
 author: insou
 depend: [Vault]

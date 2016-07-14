@@ -15,6 +15,7 @@ import co.insou.refer.listeners.player.PlayerQuit;
 import co.insou.refer.messages.Messages;
 import co.insou.refer.player.ReferPlayerManager;
 import co.insou.refer.utils.EconomyHandler;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -33,9 +34,9 @@ public class Refer extends JavaPlugin {
 	 * Extensive API
 	 * // ReferPlayer
 	 * Most efficiency as possible
-	 * Organized / neat coding
+	 * // Organized / neat coding
 	 * Time limits
-	 * Add chance delay
+	 * // Add chance delay
 	 * // Cull the static abuse
 	 * // Choose player from GUIManager instead of chat
 	 *
@@ -55,6 +56,8 @@ public class Refer extends JavaPlugin {
 
 //	public boolean debugging = false;
 
+    @Getter
+    private boolean economyEnabled = false;
     private EconomyHandler economyHandler;
 
     private Config config;
@@ -129,8 +132,9 @@ public class Refer extends JavaPlugin {
 
     private void initVault() {
         if (!setupEconomy()) {
-            getServer().getPluginManager().disablePlugin(this);
-            disable = true;
+//            getServer().getPluginManager().disablePlugin(this);
+//            disable = true;
+            getLogger().info("Could not load Vault / Economy, disabling economy features");
         }
     }
 
@@ -155,7 +159,8 @@ public class Refer extends JavaPlugin {
             return false;
         }
         economyHandler = new EconomyHandler(economyProvider.getProvider());
-        return economyHandler.isSetup();
+        economyEnabled = economyHandler.isSetup();
+        return economyEnabled;
     }
 
     private void checkExceptions() {

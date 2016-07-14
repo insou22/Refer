@@ -70,13 +70,13 @@ public class PlayerManagementSelectionOfflineConfirmationPage extends GUIPage {
 
     @Override
     public void onInventoryClick(InventoryClickEvent event) {
-        System.out.println("PMSOCP 1");
+//        System.out.println("PMSOCP 1");
         if (event.getCurrentItem() == null) {
             return;
         }
-        System.out.println("PMSOCP 2");
+//        System.out.println("PMSOCP 2");
         if (manage != null) {
-            System.out.println("PMSOCP 3");
+//            System.out.println("PMSOCP 3");
             player.openPage(new PlayerManagementPage(player, manage));
         }
     }

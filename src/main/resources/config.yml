@@ -51,7 +51,7 @@ rewards:
   '1':
     message: '&3Nice job! You got your first reference!'
     money: 500.5
-    sound: NOTE_PLING
+    sound: BLOCK_NOTE_PLING
     console-commands:
     - kit refer1 %player%
     - kit superpickaxe %player%
@@ -60,6 +60,7 @@ rewards:
     - spawn
     chance:
       enabled: false
+      delay-ticks: 20
       percentage: 50.0
       messages:
         win: '&aYou won! Nice job!'
@@ -71,7 +72,7 @@ rewards:
       - kit winner %player%
       - sudo %player% spawn
       sounds:
-        win: NOTE_PLING
+        win: BLOCK_NOTE_PLING
         lose: CAT_MEOW
   '5':
     message: '&aCongrats on getting 5 references!!'
@@ -83,6 +84,7 @@ rewards:
     - spawn
     chance:
       enabled: false
+      delay-ticks: 20
       percentage: 50.0
       messages:
         win: '&aYou won! Nice job!'
@@ -94,7 +96,7 @@ rewards:
       - kit winner %player%
       - sudo %player% spawn
       sounds:
-        win: NOTE_PLING
+        win: BLOCK_NOTE_PLING
         lose: CAT_MEOW
   '100':
     message: '&bDamn you are dedicated - legend!'
@@ -106,6 +108,7 @@ rewards:
     - spawn
     chance:
       enabled: false
+      delay-ticks: 20
       percentage: 50.0
       messages:
         win: '&aYou won! Nice job!'
@@ -117,7 +120,7 @@ rewards:
       - kit winner %player%
       - sudo %player% spawn
       sounds:
-        win: NOTE_PLING
+        win: BLOCK_NOTE_PLING
         lose: CAT_MEOW
 
-config-version: 1.7
+config-version: 2.0

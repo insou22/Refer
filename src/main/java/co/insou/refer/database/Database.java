@@ -4,9 +4,6 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.List;
 
-/**
- * Created by Zac on 16/11/2015.
- */
 public abstract class Database {
 
     public abstract boolean hasPlayerReferred(OfflinePlayer player);
@@ -16,6 +13,8 @@ public abstract class Database {
     public abstract int getReferences(OfflinePlayer player);
 
     public abstract void registerPlayer(OfflinePlayer player);
+
+    public abstract List<HistoryPack> getServerHistory();
 
     public abstract List<HistoryPack> getHistoryForPlayer(OfflinePlayer player);
 

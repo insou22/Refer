@@ -44,10 +44,10 @@ public class ConnectionPoolManager {
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setUsername(username);
         config.setPassword(password);
-        System.out.println("Setting min conns to " + minConnections + ", max: " + maxConnections);
+//        System.out.println("Setting min conns to " + minConnections + ", max: " + maxConnections);
         config.setMinimumIdle(minConnections);
         config.setMaximumPoolSize(maxConnections);
-        System.out.println("Timeout millis: " + connectionTimeout);
+//        System.out.println("Timeout millis: " + connectionTimeout);
         config.setConnectionTimeout(connectionTimeout);
         ds = new HikariDataSource(config);
         ds.resumePool();

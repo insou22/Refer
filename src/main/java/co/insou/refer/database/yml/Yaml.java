@@ -57,6 +57,8 @@ public class Yaml extends Database {
                 refer.disableOnLoad();
             }
             history = new YamlConfiguration();
+            history.createSection("references");
+            save(false, true);
         } else {
             history = YamlConfiguration.loadConfiguration(historyFile);
         }
@@ -99,6 +101,29 @@ public class Yaml extends Database {
     }
 
     @Override
+    public List<HistoryPack> getServerHistory() {
+        List<HistoryPack> packs = new ArrayList<>();
+        for (String key : history.getConfigurationSection("references").getKeys(false)) {
+            Integer id;
+            try {
+                id = Integer.parseInt(key);
+            } catch (NumberFormatException e) {
+                refer.getLogger().severe("Refer Error: Malformed history section: key: " + key);
+                continue;
+            }
+            HistoryPack pack = new HistoryPack(
+                    id,
+                    Bukkit.getOfflinePlayer(UUID.fromString(history.getString("references." + key + ".referer.uuid"))),
+                    Bukkit.getOfflinePlayer(UUID.fromString(history.getString("references." + key + ".referee.uuid"))),
+                    new Date(history.getLong("references." + key + ".timestamp"))
+            );
+            packs.add(pack);
+        }
+        Collections.reverse(packs);
+        return packs;
+    }
+
+    @Override
     public List<HistoryPack> getHistoryForPlayer(OfflinePlayer player) {
         List<HistoryPack> packs = new ArrayList<>();
         for (String key : history.getConfigurationSection("references").getKeys(false)) {
@@ -131,7 +156,7 @@ public class Yaml extends Database {
                 Bukkit.getOfflinePlayer(UUID.fromString(history.getString("references." + id + ".referee.uuid"))),
                 new Date(history.getLong("references." + id + ".timestamp"))
         );
-        history.set(String.valueOf(id), null);
+        history.set("references." + String.valueOf(id), null);
         database.set(pack.getReferer().getUniqueId().toString() + ".hasReferred", false);
         database.set(pack.getReferee().getUniqueId().toString() + ".references", getReferences(pack.getReferee()) - 1);
         save(true, true);

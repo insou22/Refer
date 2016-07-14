@@ -115,7 +115,7 @@ public class Anvil_1_8_R1 extends AnvilGUI {
             }
         };
 
-        Bukkit.getPluginManager().registerEvents(listener, Bukkit.getPluginManager().getPlugin("Editor")); //Replace with instance of main class
+        Bukkit.getPluginManager().registerEvents(listener, Bukkit.getPluginManager().getPlugin("Refer")); //Replace with instance of main class
     }
 
     public Player getPlayer() {

@@ -6,6 +6,7 @@ import co.insou.refer.gui.page.GUIPage;
 import co.insou.refer.gui.page.GUIPageType;
 import co.insou.refer.gui.pages.HistoryPage;
 import co.insou.refer.gui.pages.MainMenuPage;
+import co.insou.refer.gui.pages.admin.AdminHistoryPage;
 import co.insou.refer.gui.pages.admin.AdminMenuPage;
 import co.insou.refer.gui.pages.admin.playermanagement.select.PlayerManagementSelectOfflinePage;
 import co.insou.refer.gui.pages.admin.playermanagement.select.PlayerManagementSelectOnlinePage;
@@ -95,18 +96,18 @@ public class ReferPlayer {
     }
 
     public void onInventoryClose() {
-        System.out.println("onInventoryClose called");
+//        System.out.println("onInventoryClose called");
         if (internalIgnore || getExternalIgnore()) {
             return;
         }
-        System.out.println("Ignore");
+//        System.out.println("Ignore");
         if (getExternalCancel()) {
             openUndocumentedPage(absoluteInventory);
             return;
         }
-        System.out.println("Cancel");
+//        System.out.println("Cancel");
         if (inGUI()) {
-            System.out.println("inGUI");
+//            System.out.println("inGUI");
             getCurrentPage().onClose();
         }
     }
@@ -141,6 +142,8 @@ public class ReferPlayer {
                 return new PlayerManagementSelectOfflinePage(this);
             case PLAYER_MANAGEMENT_SELECT_ONLINE:
                 return new PlayerManagementSelectOnlinePage(this);
+            case SERVER_HISTORY:
+                return new AdminHistoryPage(this);
             case CLOSE_PAGE:
                 getCurrentPage().onClose();
                 return null;
@@ -205,10 +208,15 @@ public class ReferPlayer {
     }
 
     public void addMoney(Double money) {
-        plugin.getEconomyHandler().addMoney(player, money);
+        if (plugin.isEconomyEnabled()) {
+            plugin.getEconomyHandler().addMoney(player, money);
+        }
     }
 
     public Double getMoney() {
+        if (!plugin.isEconomyEnabled()) {
+            return -1.0;
+        }
         return plugin.getEconomyHandler().getMoney(player);
     }
 

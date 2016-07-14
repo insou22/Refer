@@ -15,9 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by Zac on 16/11/2015.
- */
 public class SQLManager extends Database {
 
     private final Refer plugin;
@@ -68,7 +65,7 @@ public class SQLManager extends Database {
         ) {
             ps.setString(1, player.getUniqueId().toString());
             ResultSet res = ps.executeQuery();
-            System.out.println("Took " + (System.currentTimeMillis() - start) + "ms");
+//            System.out.println("Took " + (System.currentTimeMillis() - start) + "ms");
             if (!res.next()) {
                 return false;
             }
@@ -103,7 +100,7 @@ public class SQLManager extends Database {
             ps2.setString(2, toRefer.getUniqueId().toString());
             ps2.setLong(3, System.currentTimeMillis());
             ps2.executeUpdate();
-            System.out.println("REFERPLAYER TOOK " + (System.currentTimeMillis() - start));
+//            System.out.println("REFERPLAYER TOOK " + (System.currentTimeMillis() - start));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -149,6 +146,31 @@ public class SQLManager extends Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<HistoryPack> getServerHistory() {
+        List<HistoryPack> packs = new ArrayList<>();
+        try (
+                Connection conn = poolManager.getConnection();
+                PreparedStatement ps = conn.prepareStatement(
+                        "SELECT * FROM `History`"
+                )
+        ) {
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                HistoryPack pack = new HistoryPack(
+                        res.getInt("ID"),
+                        Bukkit.getOfflinePlayer(UUID.fromString(res.getString("RefererUUID"))),
+                        Bukkit.getOfflinePlayer(UUID.fromString(res.getString("RefereeUUID"))),
+                        new Date(res.getLong("Time"))
+                );
+                packs.add(pack);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return packs;
     }
 
     @Override

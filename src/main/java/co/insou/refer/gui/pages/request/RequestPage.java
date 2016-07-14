@@ -9,7 +9,7 @@ import co.insou.refer.player.ReferPlayer;
 import co.insou.refer.utils.item.ItemBuilder;
 import co.insou.refer.utils.item.MetaBuilder;
 import co.insou.refer.utils.item.SkullMetaBuilder;
-import mkremins.fanciful.FancyMessage;
+import co.insou.refer.internals.mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

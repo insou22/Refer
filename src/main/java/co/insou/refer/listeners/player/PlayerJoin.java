@@ -2,7 +2,7 @@ package co.insou.refer.listeners.player;
 
 import co.insou.refer.Refer;
 import co.insou.refer.player.ReferPlayer;
-import mkremins.fanciful.FancyMessage;
+import co.insou.refer.internals.mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
  */
 public abstract class GUIPage {
 
-    private final ReferPlayer player;
+    protected final ReferPlayer player;
 
     protected ReferInventory display;
 
